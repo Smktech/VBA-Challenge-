@@ -1,0 +1,58 @@
+Sub Data_Variables()
+    For Each ws In Worksheets
+    ws.Activate
+'Set everything that follow across all spreadsheets
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock Volume"
+'Columns we want to populate
+    Columns("I:L").AutoFit
+'Set Variables for Columns
+    Dim Ticker As String
+    Dim Time As Date
+    Dim Opening As Currency
+    Dim High As Currency
+    Dim Low As Currency
+    Dim Closing As Currency
+    Dim Volume As Long
+    Dim Lastrow As Long
+    Dim TotalVolume As Double
+    Dim SummaryPointer As Long
+    
+    Lastrow = ws.Range("A" & ws.Rows.Count).End(xlUp).Row
+    TotalVolume = 0
+    Opening = Cells(2, "C").Value
+    SummaryPointer = 2
+    
+'Count the rows form T=2 to all sheets
+    For i = 2 To Lastrow
+        If Cells(i, "A").Value = Cells(i + 1, "A").Value Then
+            TotalVolume = TotalVolume + Cells(i, "G").Value
+            
+        Else
+            TotalVolume = TotalVolume + Cells(i, "G").Value
+            Closeprice = Cells(i, "F").Value
+            yearlychange = Closeprice - Opening
+            percentagechange = (yearlychange / Opening) * 100
+            Cells(SummaryPointer, "I").Value = Cells(i, "A").Value
+            Cells(SummaryPointer, "J").Value = yearlychange
+            Cells(SummaryPointer, "K").Value = "%" & percentagechange
+            Cells(SummaryPointer, "L").Value = TotalVolume
+'Math to populate the other cells after totalvolume
+            If yearlychange > 0 Then
+                ws.Range("J" & SummaryPointer).Interior.Color = vbGreen
+            ElseIf yearlychange < 0 Then
+                ws.Range("J" & SummaryPointer).Interior.Color = vbRed
+            Else
+                ws.Range("J" & SummaryPointer).Interior.Color = vbWhite
+'Shade the cells
+        End If
+        TotalVloume = 0
+        Opening = Cells(i + 1, "C").Value
+        SummaryPointer = SummaryPointer + 1
+    End If
+    Next i
+    Next ws
+    MsgBox ("Complete")
+End Sub
